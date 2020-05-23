@@ -57,7 +57,7 @@ start "" cmd /c powershell -c "Start-Process notepad.exe -WindowStyle hidden"
 
 echo [+++++++++++++++++++++++++++++++++++++++++] T1202 - Indirect Command Execution - pcalua.exe
 FOR /L %%A IN (1,1,10) DO (
-    pcalua.exe -a calc.exe
+    calc.exe
 )
 
 
