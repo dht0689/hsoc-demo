@@ -62,10 +62,4 @@ FOR /L %%A IN (1,1,10) DO (
 
 
 pause
-echo Cleanup Testing
-reg.exe delete hkcu\software\classes\ms-settings /f >nul 2>&1
-sc.exe stop evil-service >nul 2>&1
-sc.exe delete evil-service >nul 2>&1
-del %temp%\service.exe
-taskkill /F /IM notepad.exe
-echo Execution Finished at %time% %date%
+
